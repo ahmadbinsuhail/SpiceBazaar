@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spice Bazaar - Orders</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f8f9ff;
+      color: #121c28;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 260px;
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      background-color: #75330d;
+      display: flex;
+      flex-direction: column;
+      z-index: 50;
+    }
+
+    .sidebar-logo {
+      padding: 32px 24px 20px;
+    }
+
+    .sidebar-logo h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .sidebar-logo p {
+      font-size: 13px;
+      color: rgba(217, 227, 244, 0.6);
+      margin-top: 4px;
+    }
+
+    .sidebar nav {
+      flex: 1;
+      padding: 0 16px;
+      overflow-y: auto;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      color: rgba(217, 227, 244, 0.7);
+      text-decoration: none;
+      font-size: 18px;
+      margin-bottom: 4px;
+      transition: background 0.2s;
+    }
+
+    .nav-link:hover {
+      background-color: rgba(147, 74, 35, 0.3);
+      color: #f8f9ff;
+    }
+
+    .nav-link.active {
+      background-color: rgba(147, 74, 35, 0.5);
+      color: #ffffff;
+      font-weight: 700;
+      border-left: 4px solid #fe932c;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .sidebar-bottom {
+      padding: 16px;
+      border-top: 1px solid rgba(217, 227, 244, 0.1);
+      flex-shrink: 0;
+    }
+
+    .inventory-btn {
+      width: 100%;
+      background-color: #fe932c;
+      color: #663500;
+      font-weight: 700;
+      font-family: 'Poppins', sans-serif;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .sidebar-bottom-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      color: rgba(217, 227, 244, 0.7);
+      text-decoration: none;
+      font-size: 15px;
+      margin-bottom: 2px;
+      transition: color 0.2s;
+    }
+
+    .sidebar-bottom-link:hover {
+      color: #f8f9ff;
+    }
+
+    /* ── Top Bar ── */
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 260px;
+      right: 0;
+      height: 64px;
+      background-color: #f8f9ff;
+      border-bottom: 1px solid #e4beb9;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 40;
+    }
+
+    .search-box {
+      position: relative;
+      max-width: 440px;
+      width: 100%;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 8px 16px 8px 40px;
+      background-color: #eef4ff;
+      border: none;
+      border-radius: 50px;
+      font-size: 14px;
+      font-family: 'Poppins', sans-serif;
+      outline: none;
+    }
+
+    .search-box .material-symbols-outlined {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #5b403d;
+      font-size: 20px;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      padding: 8px;
+      border-radius: 50%;
+      cursor: pointer;
+      color: #5b403d;
+    }
+
+    .icon-btn:hover {
+      background-color: #eef4ff;
+    }
+
+    /* avatar replaced with session-based div */
+
+    /* ── Main Content ── */
+    .main {
+      margin-left: 260px;
+      padding-top: 88px;
+      padding-bottom: 48px;
+      padding-left: 24px;
+      padding-right: 24px;
+      min-height: 100vh;
+    }
+
+    /* ── Page Header ── */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .page-header h2 {
+      font-size: 24px;
+      font-weight: 600;
+      color: #93000b;
+      margin-bottom: 4px;
+    }
+
+    .page-header p {
+      font-size: 14px;
+      color: #5b403d;
+    }
+
+    .new-order-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background-color: #93000b;
+      color: #ffffff;
+      font-weight: 700;
+      font-family: 'Poppins', sans-serif;
+      padding: 10px 24px;
+      border-radius: 50px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      box-shadow: 0 4px 12px rgba(147, 0, 11, 0.2);
+    }
+
+    /* ── Filter Chips ── */
+    .filter-chips {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+
+    .chip {
+      padding: 8px 20px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      border: 1px solid #e4beb9;
+      background-color: #ffffff;
+      color: #5b403d;
+      font-family: 'Poppins', sans-serif;
+      transition: background 0.2s;
+    }
+
+    .chip:hover {
+      background-color: #eef4ff;
+    }
+
+    .chip.active {
+      background-color: #fe932c;
+      color: #663500;
+      border-color: #fe932c;
+      box-shadow: 0 2px 8px rgba(254, 147, 44, 0.3);
+    }
+
+    /* ── Orders Grid ── */
+    .orders-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    /* ── Order Card ── */
+    .order-card {
+      background-color: #ffffff;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(228, 190, 185, 0.3);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .order-card.alert {
+      border: 2px solid rgba(147, 0, 11, 0.2);
+    }
+
+    .alert-tag {
+      position: absolute;
+      top: -1px;
+      right: -1px;
+      background-color: #93000b;
+      color: #ffffff;
+      padding: 4px 12px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      border-radius: 0 12px 0 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .alert-dot {
+      width: 8px;
+      height: 8px;
+      background-color: #ffffff;
+      border-radius: 50%;
+      animation: pulse 1.4s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* Card Top Row */
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .customer-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .customer-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .customer-icon.orange { background-color: #ffdbcc; color: #75330d; }
+    .customer-icon.blue   { background-color: #ffdcc3; color: #904d00; }
+    .customer-icon.red    { background-color: #ffdad6; color: #93000b; }
+    .customer-icon.gray   { background-color: #e8e8e8; color: #5b403d; }
+
+    .customer-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #121c28;
+      margin-bottom: 2px;
+    }
+
+    .customer-contact {
+      font-size: 13px;
+      color: #5b403d;
+    }
+
+    /* Status Badge */
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 50px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+
+    .status-pending    { background-color: #fef3c7; color: #92400e; }
+    .status-packing    { background-color: #dbeafe; color: #1e40af; }
+    .status-dispatched { background-color: #ffdad6; color: #93000b; }
+    .status-delivered  { background-color: #dcfce7; color: #15803d; }
+
+    /* Items Box */
+    .items-box {
+      background-color: #eef4ff;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+      flex: 1;
+    }
+
+    .items-box.urgent {
+      border-left: 4px solid #93000b;
+    }
+
+    .items-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #5b403d;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 10px;
+    }
+
+    .items-label.urgent-label {
+      color: #93000b;
+    }
+
+    .item-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    .item-row .urgent-item {
+      color: #93000b;
+      font-weight: 700;
+    }
+
+    /* Card Bottom */
+    .card-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .total-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #5b403d;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 2px;
+    }
+
+    .total-amount {
+      font-size: 22px;
+      font-weight: 700;
+      color: #93000b;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    /* Action Buttons */
+    .btn-orange {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background-color: rgba(254, 147, 44, 0.1);
+      color: #6e3900;
+      border: 1px solid #fe932c;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 13px;
+      font-family: 'Poppins', sans-serif;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-orange:hover {
+      background-color: #fe932c;
+      color: #ffffff;
+    }
+
+    .btn-brown {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background-color: #75330d;
+      color: #ffffff;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 13px;
+      font-family: 'Poppins', sans-serif;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-brown:hover {
+      background-color: #934a23;
+    }
+
+    .btn-green {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background-color: #16a34a;
+      color: #ffffff;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 13px;
+      font-family: 'Poppins', sans-serif;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-green:hover {
+      background-color: #15803d;
+    }
+
+    .btn-delete {
+      background: none;
+      border: none;
+      color: #ba1a1a;
+      padding: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .btn-delete:hover {
+      background-color: #ffdad6;
+    }
+
+    /* ── Load More ── */
+    .load-more-wrap {
+      display: flex;
+      justify-content: center;
+      margin-top: 40px;
+    }
+
+    .load-more-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 32px;
+      background-color: #ffffff;
+      border: 1px solid #e4beb9;
+      border-radius: 12px;
+      color: #5b403d;
+      font-weight: 700;
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .load-more-btn:hover {
+      background-color: #eef4ff;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <h1>Spice Bazaar</h1>
+      <p>Zaiqay Ka Asal Bazaar</p>
+    </div>
+
+    <nav>
+      <a href="{{ url_for('dashboard') }}" class="nav-link">
+        🏠 Dashboard
+      </a>
+      <a href="{{ url_for('new_order') }}" class="nav-link">
+        🛒 New Order
+      </a>
+      <a href="{{ url_for('orders') }}" class="nav-link active">
+        🚚 Orders
+      </a>
+      <a href="{{ url_for('inventory') }}" class="nav-link">
+        📦 Inventory
+      </a>
+      <a href="{{ url_for('analysis') }}" class="nav-link">
+        📊 Analysis
+      </a>
+      
+    </nav>
+
+        <div class="sidebar-bottom">
+        <a href="/logout" class="sidebar-bottom-link" style="color:#fe932c;font-weight:700;">
+            <span class="material-symbols-outlined">logout</span> Logout
+        </a>
+    </div>
+  </aside>
+
+  <!-- Top Bar -->
+  <header class="topbar">
+    <div class="search-box">
+      <span class="material-symbols-outlined">search</span>
+      <input type="text" id="order-search" placeholder="Search Customer, Phone, or City..." oninput="filterOrders()" />
+    </div>
+    <div class="topbar-right">
+      <button class="icon-btn"><span class="material-symbols-outlined">notifications</span></button>
+      <button class="icon-btn"><span class="material-symbols-outlined">history</span></button>
+      <div style="display:flex;align-items:center;gap:10px;padding-left:16px;border-left:1px solid #e4beb9;margin-left:8px;">
+        <div><div style="font-size:13px;font-weight:700;color:#93000b;text-transform:uppercase;">{{ session.get('full_name','Admin') }}</div>
+        <div style="font-size:12px;color:#5b403d;">{{ session.get('role','Admin') }}</div></div>
+        <div style="width:38px;height:38px;border-radius:50%;background-color:#ffdbcc;border:2px solid #fe932c;display:flex;align-items:center;justify-content:center;font-weight:700;color:#75330d;font-size:15px;">{{ session.get('full_name','A')[:1].upper() }}</div>
+      </div>
+      <a href="{{ url_for('logout') }}" style="display:flex;align-items:center;gap:6px;padding:7px 14px;background:#fff0ee;border:1.5px solid #ffcdd2;border-radius:8px;color:#93000b;font-size:13px;font-weight:700;text-decoration:none;margin-left:8px;">
+        <span class="material-symbols-outlined" style="font-size:18px;">logout</span> Logout
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <div>
+        <h2> Spices Orders</h2>
+        <p>Manage and track your active global spice trade shipments.</p>
+      </div>
+      <a href="{{ url_for('new_order') }}" class="new-order-btn" style="text-decoration:none;">
+        <span class="material-symbols-outlined">add</span>
+        Create New Order
+      </a>
+    </div>
+
+    <!-- Filter Chips -->
+    <div class="filter-chips">
+      <button class="chip active">All Orders</button>
+      <button class="chip">Pending</button>
+      <button class="chip">Packing</button>
+      <button class="chip">Dispatched</button>
+      <button class="chip">Delivered</button>
+    </div>
+
+    <!-- Orders Grid -->
+    <div class="orders-grid">
+
+      {% for o in orders %}
+      <div class="order-card" data-name="{{ o.customer_name|lower }}" data-phone="{{ o.phone }}" data-city="{{ o.city|lower }}" data-status="{{ o.status|lower }}">
+        <div class="card-top">
+          <div class="customer-info">
+            <div class="customer-icon orange">
+              <span class="material-symbols-outlined">person</span>
+            </div>
+            <div>
+              <div class="customer-name">{{ o.customer_name }}</div>
+              <div class="customer-contact">{{ o.phone }} • {{ o.city }}</div>
+            </div>
+          </div>
+          <span class="status-badge status-{{ o.status.lower() }}">{{ o.status }}</span>
+        </div>
+
+        <div class="items-box">
+          <div class="items-label">Order #{{ o.order_number }} — {{ o.display_time[:16] if o.display_time else "" }}</div>
+          {% if o.salesman %}
+          <div class="item-row"><span>Salesman: {{ o.salesman }}</span></div>
+          {% endif %}
+        </div>
+
+        <div class="card-bottom">
+          <div>
+            <div class="total-label">Total Amount</div>
+            <div class="total-amount">Rs. {{ "%.2f"|format(o.total_amount) }}</div>
+          </div>
+          <div class="card-actions">
+            {% if o.status == "Pending" %}
+            <form method="POST" action="/orders/update-status" style="display:inline;">
+              <input type="hidden" name="order_id" value="{{ o.id }}" />
+              <input type="hidden" name="status" value="Packing" />
+              <button type="submit" class="btn-orange">
+                <span class="material-symbols-outlined" style="font-size:18px;">package_2</span>
+                Move to Packing
+              </button>
+            </form>
+            {% elif o.status == "Packing" %}
+            <form method="POST" action="/orders/update-status" style="display:inline;">
+              <input type="hidden" name="order_id" value="{{ o.id }}" />
+              <input type="hidden" name="status" value="Dispatched" />
+              <button type="submit" class="btn-brown">
+                <span class="material-symbols-outlined" style="font-size:18px;">local_shipping</span>
+                Mark as Dispatched
+              </button>
+            </form>
+            {% elif o.status == "Dispatched" %}
+            <form method="POST" action="/orders/update-status" style="display:inline;">
+              <input type="hidden" name="order_id" value="{{ o.id }}" />
+              <input type="hidden" name="status" value="Delivered" />
+              <button type="submit" class="btn-green">
+                <span class="material-symbols-outlined" style="font-size:18px;">check_circle</span>
+                Confirm Delivery
+              </button>
+            </form>
+            {% else %}
+            <span style="color:#4caf50;font-weight:bold;">✅ Delivered</span>
+            {% endif %}
+
+            <a href="/orders/bill/{{ o.id }}" class="btn-orange" style="text-decoration:none;" title="View Bill" target="_blank">
+              <span class="material-symbols-outlined" style="font-size:18px;">receipt_long</span>
+              Bill
+            </a>
+            <form method="POST" action="/orders/delete" style="display:inline;" onsubmit="return confirm('Delete order #{{ o.order_number }}? This cannot be undone.');">
+              <input type="hidden" name="order_id" value="{{ o.id }}" />
+              <button type="submit" class="btn-delete" title="Delete Order">
+                <span class="material-symbols-outlined" style="font-size:20px;">delete</span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <div style="grid-column:1/-1;text-align:center;padding:60px;color:#999;">
+        <p style="font-size:40px;margin-bottom:12px;">📦</p>
+        <p>No orders yet. <a href="{{ url_for('new_order') }}" style="color:#93000b;font-weight:bold;">Create one →</a></p>
+      </div>
+      {% endfor %}
+
+
+
+    </div><!-- end orders-grid -->
+  </main>
+
+<script>
+// ── Filter chips ──
+document.querySelectorAll('.filter-chips .chip').forEach(chip => {
+  chip.addEventListener('click', function() {
+    document.querySelectorAll('.filter-chips .chip').forEach(c => c.classList.remove('active'));
+    this.classList.add('active');
+    filterOrders();
+  });
+});
+
+function filterOrders() {
+  const query  = (document.getElementById('order-search').value || '').toLowerCase().trim();
+  const active = document.querySelector('.filter-chips .chip.active');
+  const status = active ? active.textContent.trim().toLowerCase() : 'all orders';
+
+  document.querySelectorAll('.order-card').forEach(card => {
+    const nameMatch  = card.dataset.name  && card.dataset.name.includes(query);
+    const phoneMatch = card.dataset.phone && card.dataset.phone.includes(query);
+    const cityMatch  = card.dataset.city  && card.dataset.city.includes(query);
+    const textMatch  = !query || nameMatch || phoneMatch || cityMatch;
+    const chipMatch  = status === 'all orders' || card.dataset.status === status;
+    card.style.display = (textMatch && chipMatch) ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SpiceBazaar | Inventory</title>
+  <!-- Google Fonts: Poppins for clean look, Material Icons for sidebar icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+  <style>
+    /* ── RESET: remove default browser spacing ── */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f5f5f5;
+      color: #222;
+    }
+
+    /* ═══════════════════════════════════════
+       SIDEBAR - Left panel navigation
+       Fixed on left side, full height
+    ═══════════════════════════════════════ */
+    .sidebar {
+      width: 240px;
+      height: 100vh;
+      background-color: #75330d;   /* dark brown */
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;            /* no scroll on sidebar */
+    }
+
+    /* Logo area at top of sidebar */
+    .sidebar-logo {
+      padding: 24px 20px 16px;
+    }
+    .sidebar-logo h1 {
+      color: white;
+      font-size: 22px;
+      font-weight: 700;
+    }
+    .sidebar-logo p {
+      color: rgba(255,255,255,0.6);
+      font-size: 11px;
+      margin-top: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Navigation links */
+    .sidebar nav {
+      flex: 1;
+      padding: 8px 12px;
+      /* No overflow-y so sidebar never scrolls */
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      color: rgba(255,255,255,0.65);
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 18px;
+      margin-bottom: 2px;
+      transition: background 0.2s;
+    }
+    .nav-link:hover {
+      background-color: rgba(255,255,255,0.1);
+      color: white;
+    }
+    /* Highlighted active page link */
+    .nav-link.active {
+      background-color: rgba(255,255,255,0.2);
+      color: white;
+      font-weight: 700;
+      border-left: 4px solid #fe932c;  /* orange accent */
+    }
+
+    /* Logout link at bottom */
+    .sidebar-logout {
+      padding: 12px 16px 20px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    .sidebar-logout a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      color: #fe932c;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .sidebar-logout a:hover {
+      background-color: rgba(255,255,255,0.1);
+    }
+
+    /* ═══════════════════════════════════════
+       TOP HEADER BAR
+    ═══════════════════════════════════════ */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 240px;
+      right: 0;
+      height: 60px;
+      background-color: white;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 10;
+    }
+
+    .header input {
+      padding: 8px 14px;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      font-size: 14px;
+      width: 260px;
+      outline: none;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #93000b;
+    }
+
+    /* Circular avatar with initial letter */
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: #ffdbcc;
+      border: 2px solid #fe932c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #75330d;
+      font-size: 14px;
+    }
+
+    .logout-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: #fff0ee;
+      border: 1.5px solid #ffcdd2;
+      border-radius: 8px;
+      color: #93000b;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    /* ═══════════════════════════════════════
+       MAIN CONTENT AREA
+    ═══════════════════════════════════════ */
+    .main {
+      margin-left: 240px;
+      padding: 76px 24px 40px;
+    }
+
+    /* Page title row */
+    .page-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 24px;
+    }
+    .page-title h2 {
+      font-size: 28px;
+      color: #93000b;
+      font-weight: 700;
+    }
+    .page-title p {
+      color: #666;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+    .add-btn {
+      padding: 10px 20px;
+      background-color: #93000b;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* ── STATS BAR at top of inventory ── */
+    .stats-bar {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stats-card {
+      background-color: white;
+      border-radius: 12px;
+      padding: 20px 24px;
+      border: 1px solid #e5e5e5;
+      flex: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .stats-numbers {
+      display: flex;
+      gap: 32px;
+    }
+    .stats-numbers div p:first-child {
+      font-size: 11px;
+      color: #888;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .stats-numbers div p:last-child {
+      font-size: 26px;
+      font-weight: 700;
+    }
+    /* Make low-stock number red */
+    .stats-numbers div:last-child p:last-child {
+      color: #93000b;
+    }
+
+    .warning-msg {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: #555;
+      max-width: 200px;
+    }
+
+    /* Brown restock info card */
+    .restock-card {
+      background-color: #934a23;
+      color: white;
+      border-radius: 12px;
+      padding: 20px 24px;
+      flex: 1;
+    }
+    .restock-card .label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      opacity: 0.75;
+      margin-bottom: 8px;
+    }
+    .restock-card h3 { font-size: 16px; margin-bottom: 4px; }
+    .restock-card .sub { font-size: 13px; opacity: 0.8; }
+
+    /* ═══════════════════════════════════════
+       SPICE CARDS GRID
+       3 columns, each card shows spice image + stock info
+    ═══════════════════════════════════════ */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .spice-card {
+      background-color: white;
+      border-radius: 12px;
+      border: 1px solid #e5e5e5;
+      overflow: hidden;
+    }
+
+    /* Image at top of card */
+    .card-img-wrapper { position: relative; }
+
+    .spice-card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Placeholder when no image available */
+    .img-placeholder {
+      height: 160px;
+      background: linear-gradient(135deg, #f8e8d0, #ffe4cc);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 52px;
+    }
+
+    /* Red LOW STOCK badge shown on image */
+    .low-stock-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #ba1a1a;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    /* Card info below image */
+    .card-body { padding: 16px; }
+
+    .card-name { font-size: 16px; font-weight: 700; color: #222; margin-bottom: 2px; }
+    .card-category { font-size: 12px; color: #888; margin-bottom: 14px; }
+
+    /* Two boxes showing 20Rs and 50Rs stock counts */
+    .packet-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .packet-box {
+      background-color: #f8f8f8;
+      border-radius: 8px;
+      padding: 10px;
+    }
+    .packet-box.orange { border-left: 4px solid #fe932c; }
+    .packet-box.red    { border-left: 4px solid #93000b; }
+
+    .packet-box .p-label {
+      font-size: 10px;
+      color: #888;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .packet-box .p-count {
+      font-size: 20px;
+      font-weight: 700;
+      color: #222;
+    }
+    .packet-box .p-count.low { color: #ba1a1a; }  /* red when low */
+    .packet-box .p-unit { font-size: 11px; color: #888; font-weight: 400; }
+
+    /* Restock form at bottom of each card */
+    .restock-section { border-top: 1px solid #eee; padding-top: 12px; }
+    .restock-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #888;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .restock-inputs { display: flex; gap: 8px; }
+    .restock-inputs input,
+    .restock-inputs select {
+      flex: 1;
+      padding: 7px 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 13px;
+      outline: none;
+      font-family: 'Poppins', sans-serif;
+    }
+    .restock-inputs button {
+      padding: 7px 14px;
+      background-color: #904d00;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    /* "Add New Spice" dashed card */
+    .add-card {
+      border: 2px dashed #ccc;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      cursor: pointer;
+      background-color: #fafafa;
+      text-align: center;
+    }
+    .add-card:hover { background-color: #f0f0f0; }
+    .add-card .plus-circle {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background-color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: #888;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 12px;
+    }
+    .add-card h3 { font-size: 15px; color: #555; margin-bottom: 4px; }
+    .add-card p  { font-size: 12px; color: #999; }
+
+    /* ── RECENT ACTIVITY TABLE ── */
+    .activity-table-wrapper {
+      background-color: white;
+      border-radius: 12px;
+      border: 1px solid #e5e5e5;
+      overflow: hidden;
+    }
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid #eee;
+    }
+    .table-header h3 { font-size: 16px; font-weight: 700; }
+    .table-header button {
+      background: none;
+      border: none;
+      color: #93000b;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+
+    table { width: 100%; border-collapse: collapse; }
+    thead { background-color: #f5f5f5; }
+    thead th {
+      padding: 12px 20px;
+      font-size: 11px;
+      text-transform: uppercase;
+      color: #888;
+      font-weight: 700;
+      text-align: left;
+    }
+    tbody tr { border-top: 1px solid #f0f0f0; }
+    tbody tr:hover { background-color: #fafafa; }
+    tbody td { padding: 13px 20px; font-size: 14px; }
+
+    /* Green for restocked, red for sold */
+    .adj-plus  { color: #16a34a; font-weight: 700; }
+    .adj-minus { color: #ba1a1a; font-weight: 700; }
+
+    .status-badge {
+      padding: 3px 8px;
+      background-color: #eee;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #555;
+    }
+    .time-text { color: #888; font-size: 13px; }
+
+    /* ── MODAL for Add New Spice ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-box {
+      background: white;
+      padding: 32px;
+      border-radius: 16px;
+      width: 400px;
+    }
+    .modal-box h3 { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
+    .form-field { margin-bottom: 14px; }
+    .form-field label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #888;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .form-field input {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: 'Poppins', sans-serif;
+      outline: none;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .modal-actions { display: flex; gap: 10px; }
+    .modal-actions .btn-save {
+      flex: 1; padding: 10px;
+      background: #93000b; color: white;
+      border: none; border-radius: 8px;
+      font-weight: 700; cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+    }
+    .modal-actions .btn-cancel {
+      flex: 1; padding: 10px;
+      background: #eee; border: none;
+      border-radius: 8px; cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════
+       SIDEBAR - always visible on left side
+  ═══════════════════════════════════════════════ -->
+  <aside class="sidebar">
+
+    <!-- Logo -->
+    <div class="sidebar-logo">
+      <h1>Spice Bazaar</h1>
+      <p>Zaiqay Ka Asal Bazaar</p>
+    </div>
+
+    <!-- Navigation links with Material Icons -->
+    <nav>
+      <a href="{{ url_for('dashboard') }}" class="nav-link">
+        🏠 Dashboard
+      </a>
+      <a href="{{ url_for('new_order') }}" class="nav-link">
+        🛒 New Order
+      </a>
+      <a href="{{ url_for('orders') }}" class="nav-link">
+        🚚 Orders
+      </a>
+      <a href="{{ url_for('inventory') }}" class="nav-link active">
+        📦 Inventory
+      </a>
+      <a href="{{ url_for('analysis') }}" class="nav-link">
+        📊 Analysis
+      </a>
+    </nav>
+
+    <!-- Logout at bottom -->
+    <div class="sidebar-logout">
+      <a href="{{ url_for('logout') }}">
+        <span class="material-symbols-outlined" style="font-size:20px;">logout</span>
+        Logout
+      </a>
+    </div>
+
+  </aside>
+
+
+  <!-- ═══════════════════════════════════════════════
+       TOP HEADER BAR
+  ═══════════════════════════════════════════════ -->
+  <header class="header">
+    <input type="text" id="inv-search" placeholder="Search spices..." oninput="filterSpices()" />
+    <div class="header-right">
+      <span class="user-name">{{ session.get('full_name', 'Admin') }}</span>
+      <div class="avatar">{{ session.get('full_name', 'A')[:1].upper() }}</div>
+      <a href="{{ url_for('logout') }}" class="logout-btn">
+        <span class="material-symbols-outlined" style="font-size:16px;">logout</span>
+        Logout
+      </a>
+    </div>
+  </header>
+
+
+  <!-- ═══════════════════════════════════════════════
+       MAIN CONTENT
+  ═══════════════════════════════════════════════ -->
+  <main class="main">
+
+    <!-- Page Title -->
+    <div class="page-title">
+      <div>
+        <h2>📦 Spice Inventory</h2>
+        <p>Manage and restock spice inventory across all packet sizes.</p>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;">
+       
+        <button class="add-btn" onclick="document.getElementById('add-spice-modal').style.display='flex'">
+          + Add New Spice
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats Bar: Total variants, Low stock count, Last restock -->
+    <div class="stats-bar">
+      <div class="stats-card">
+        <div class="stats-numbers">
+          <div>
+            <p>Total Variants</p>
+            <p>{{ total_variants }}</p>
+          </div>
+          <div>
+            <p>Low Stock Items</p>
+            <p>{{ low_stock_count }}</p>
+          </div>
+        </div>
+        <div style="width:1px;height:48px;background:#ddd;"></div>
+        <div class="warning-msg">
+          <span style="font-size:22px;">⚠️</span>
+          <p>Check items with red numbers — they need restocking soon.</p>
+        </div>
+      </div>
+
+      <div class="restock-card">
+        <p class="label">Last Restock</p>
+        <h3>{% if last_restock %}{{ last_restock.created_at[:16] }}{% else %}No restocks yet{% endif %}</h3>
+        <p class="sub">{% if last_restock %}{{ last_restock.spice_name }}{% endif %}</p>
+      </div>
+    </div>
+
+
+    <!-- ═══════════════════════════════════════════════
+         SPICE CARDS - one card per spice with image
+    ═══════════════════════════════════════════════ -->
+    <div class="cards-grid">
+
+      {% for s in spices %}
+      <div class="spice-card" data-name="{{ s.name|lower }}" data-cat="{{ (s.category or '')|lower }}">
+
+        <!-- Image Section -->
+        <div class="card-img-wrapper">
+          <img src="{{ s.img_url or '' }}" alt="{{ s.name }}"
+               style="{% if not s.img_url or not s.img_url|trim %}display:none;{% endif %}"
+               onerror="this.style.display='none';this.parentElement.querySelector('.img-placeholder').style.display='flex';" />
+          <div class="img-placeholder" style="{% if s.img_url and s.img_url|trim %}display:none;{% endif %}">
+            {% if 'mirch' in s.name.lower() or 'chili' in s.name.lower() %}
+              <div style="font-size:56px;line-height:1;">🌶️</div>
+            {% elif 'haldi' in s.name.lower() or 'turmeric' in s.name.lower() %}
+              <div style="font-size:56px;line-height:1;">🌕</div>
+            {% elif 'zeera' in s.name.lower() or 'cumin' in s.name.lower() %}
+              <div style="font-size:56px;line-height:1;">🌾</div>
+            {% elif 'dhaniya' in s.name.lower() %}
+              <div style="font-size:56px;line-height:1;">🌿</div>
+            {% elif 'elaichi' in s.name.lower() or 'cardamom' in s.name.lower() %}
+              <div style="font-size:56px;line-height:1;">🫚</div>
+            {% elif 'kali' in s.name.lower() or 'pepper' in s.name.lower() %}
+              <div style="font-size:56px;line-height:1;">🖤</div>
+            {% elif 'garam' in s.name.lower() %}
+              <div style="font-size:56px;line-height:1;">🍛</div>
+            {% else %}
+              <div style="font-size:56px;line-height:1;">🌶️</div>
+            {% endif %}
+          </div>
+
+          <!-- Low Stock Warning Badge -->
+          {% if s.stock_20 < 10 or s.stock_50 < 10 %}
+            <span class="low-stock-badge">⚠ LOW STOCK</span>
+          {% endif %}
+        </div>
+
+        <!-- Card Info -->
+        <div class="card-body">
+          <p class="card-name">{{ s.name }}</p>
+          <p class="card-category">Category: {{ s.category or 'General' }}</p>
+
+          <!-- Stock count boxes: 20Rs and 50Rs packets -->
+          <div class="packet-row">
+            <div class="packet-box orange">
+              <p class="p-label">20 Rs Packets</p>
+              <p class="p-count {{ 'low' if s.stock_20 < 10 else '' }}">
+                {{ s.stock_20 }} <span class="p-unit">units</span>
+              </p>
+            </div>
+            <div class="packet-box red">
+              <p class="p-label">50 Rs Packets</p>
+              <p class="p-count {{ 'low' if s.stock_50 < 10 else '' }}">
+                {{ s.stock_50 }} <span class="p-unit">units</span>
+              </p>
+            </div>
+          </div>
+
+          <!-- Quick Restock Form -->
+          <div class="restock-section">
+            <p class="restock-label">Quick Restock</p>
+            <form method="POST" action="/inventory/restock">
+              <input type="hidden" name="spice_id" value="{{ s.id }}" />
+              <div class="restock-inputs">
+                <input type="number" name="qty" placeholder="Qty" min="1" />
+                <select name="packet_type">
+                  <option value="20">20 Rs</option>
+                  <option value="50">50 Rs</option>
+                </select>
+                <button type="submit">🔄</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+      {% endfor %}
+
+      <!-- Add New Spice Card (dashed border) -->
+      <div class="add-card" onclick="document.getElementById('add-spice-modal').style.display='flex'">
+        <div class="plus-circle">+</div>
+        <h3>New Spice Entry</h3>
+        <p>Add a new spice with starting stock</p>
+      </div>
+
+    </div>
+
+
+    <!-- ═══════════════════════════════════════════════
+         RECENT STOCK ACTIVITY TABLE
+    ═══════════════════════════════════════════════ -->
+    <div class="activity-table-wrapper">
+      <div class="table-header">
+        <h3>Recent Stock Adjustments</h3>
+        <button>View All Logs</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Spice Name</th>
+            <th>Packet Type</th>
+            <th>Change</th>
+            <th>Action</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in stock_log %}
+          <tr>
+            <td>{{ log.spice_name }}</td>
+            <td style="color:#888;">{{ log.packet_type }}</td>
+            <td class="{{ 'adj-plus' if log.adjustment > 0 else 'adj-minus' }}">
+              {{ '+' if log.adjustment > 0 else '' }}{{ log.adjustment }} units
+            </td>
+            <td><span class="status-badge">{{ log.action.upper() }}</span></td>
+            <td class="time-text">{{ log.created_at[:16] }}</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="5" style="text-align:center;color:#999;padding:20px;">
+              No stock activity yet.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+
+
+  <!-- ═══════════════════════════════════════════════
+       ADD NEW SPICE MODAL (popup form)
+  ═══════════════════════════════════════════════ -->
+  <div id="add-spice-modal" class="modal-overlay">
+    <div class="modal-box">
+      <h3>➕ Add New Spice</h3>
+      <form method="POST" action="/inventory/add">
+        <div class="form-field">
+          <label>Spice Name</label>
+          <input name="name" required placeholder="e.g. Cardamom" />
+        </div>
+        <div class="form-field">
+          <label>Category</label>
+          <input name="category" placeholder="e.g. Aromatics" />
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label>20 Rs Stock</label>
+            <input name="stock_20" type="number" value="0" />
+          </div>
+          <div class="form-field">
+            <label>50 Rs Stock</label>
+            <input name="stock_50" type="number" value="0" />
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="btn-save">Add Spice</button>
+          <button type="button" class="btn-cancel"
+                  onclick="document.getElementById('add-spice-modal').style.display='none'">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<script>
+function filterSpices() {
+  const q = (document.getElementById('inv-search').value || '').toLowerCase().trim();
+  document.querySelectorAll('.spice-card').forEach(card => {
+    const match = !q || card.dataset.name.includes(q) || card.dataset.cat.includes(q);
+    card.style.display = match ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>

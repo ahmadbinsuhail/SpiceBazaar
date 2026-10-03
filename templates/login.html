@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spice Bazaar –  Spices Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      background: #f8f0e8;
+    }
+
+    /* ── Left Panel ── */
+    .left-panel {
+      width: 50%;
+      background: linear-gradient(145deg, #75330d 0%, #93000b 60%, #5a1a00 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 60px 50px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .left-panel::before {
+      content: '';
+      position: absolute;
+      top: -80px; right: -80px;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      background: rgba(254,147,44,0.12);
+    }
+
+    .left-panel::after {
+      content: '';
+      position: absolute;
+      bottom: -60px; left: -60px;
+      width: 240px; height: 240px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+    }
+
+    .brand {
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .brand-icon {
+      font-size: 72px;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .brand h1 {
+      font-size: 42px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -1px;
+    }
+
+    .brand h1 span {
+      color: #fe932c;
+    }
+
+    .brand p {
+      font-size: 14px;
+      color: rgba(255,255,255,0.65);
+      margin-top: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .brand-divider {
+      width: 60px;
+      height: 3px;
+      background: #fe932c;
+      margin: 24px auto;
+      border-radius: 2px;
+    }
+
+    .features {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin-top: 10px;
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 340px;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 14px 18px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .feature-item .material-symbols-outlined {
+      color: #fe932c;
+      font-size: 26px;
+      flex-shrink: 0;
+    }
+
+    .feature-item p {
+      font-size: 13px;
+      color: rgba(255,255,255,0.8);
+      font-weight: 500;
+    }
+
+    .pk-badge {
+      margin-top: 40px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,0.1);
+      padding: 10px 20px;
+      border-radius: 50px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .pk-badge span {
+      font-size: 13px;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .pk-flag {
+      font-size: 22px;
+    }
+
+    /* ── Right Panel ── */
+    .right-panel {
+      width: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      background: #fdf8f3;
+    }
+
+    .auth-box {
+      width: 100%;
+      max-width: 400px;
+    }
+
+    /* Tabs */
+    .tab-header {
+      display: flex;
+      background: #f0e6de;
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 32px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      background: transparent;
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #9b6a50;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    .tab-btn.active {
+      background: #93000b;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(147,0,11,0.25);
+    }
+
+    /* Form sections */
+    .form-section { display: none; }
+    .form-section.active { display: block; }
+
+    .form-title {
+      font-size: 26px;
+      font-weight: 700;
+      color: #75330d;
+      margin-bottom: 6px;
+    }
+
+    .form-subtitle {
+      font-size: 13px;
+      color: #9b6a50;
+      margin-bottom: 28px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #75330d;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-wrap .material-symbols-outlined {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #c0916d;
+      font-size: 20px;
+      pointer-events: none;
+    }
+
+    .input-wrap input, .input-wrap select {
+      width: 100%;
+      padding: 13px 16px 13px 44px;
+      border: 1.5px solid #e8d5c8;
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: 'Poppins', sans-serif;
+      background: #fff;
+      color: #3d1c0e;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .input-wrap input:focus, .input-wrap select:focus {
+      border-color: #fe932c;
+      box-shadow: 0 0 0 3px rgba(254,147,44,0.12);
+    }
+
+    .toggle-pass {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #c0916d;
+      padding: 0;
+    }
+
+    .toggle-pass .material-symbols-outlined { font-size: 20px; pointer-events: none; }
+    .toggle-pass { pointer-events: all; z-index: 10; }
+
+    .forgot-link {
+      text-align: right;
+      margin-top: -10px;
+      margin-bottom: 18px;
+    }
+
+    .forgot-link a {
+      font-size: 12px;
+      color: #93000b;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #93000b, #75330d);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'Poppins', sans-serif;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 6px 20px rgba(147,0,11,0.25);
+      transition: transform 0.15s, box-shadow 0.15s;
+      margin-top: 4px;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(147,0,11,0.3);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0;
+      color: #c0916d;
+      font-size: 12px;
+    }
+
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #e8d5c8;
+    }
+
+    .flash-msg {
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .flash-error { background: #fff0f0; color: #93000b; border: 1px solid #ffcdd2; }
+    .flash-success { background: #f0fff4; color: #1a6e35; border: 1px solid #b2dfdb; }
+
+    .role-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .role-card {
+      border: 1.5px solid #e8d5c8;
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .role-card input[type="radio"] { display: none; }
+
+    .role-card.selected {
+      border-color: #fe932c;
+      background: #fff8f0;
+    }
+
+    .role-card .material-symbols-outlined { font-size: 24px; color: #75330d; }
+    .role-card p { font-size: 12px; font-weight: 600; color: #75330d; margin-top: 4px; }
+
+    .footer-note {
+      text-align: center;
+      font-size: 12px;
+      color: #c0916d;
+      margin-top: 24px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Left Panel -->
+  <div class="left-panel">
+    <div class="brand">
+      <span class="brand-icon">🌶️</span>
+      <h1>Spice<span> Bazaar</span></h1>
+      <p> Inventory Management System</p>
+      <div class="brand-divider"></div>
+    </div>
+
+    <div class="features">
+      <div class="feature-item">
+        <span class="material-symbols-outlined">inventory_2</span>
+        <p>Real-time inventory tracking for all spice variants</p>
+      </div>
+      <div class="feature-item">
+        <span class="material-symbols-outlined">local_shipping</span>
+        <p>Manage orders from all over Pakistan</p>
+      </div>
+      <div class="feature-item">
+        <span class="material-symbols-outlined">analytics</span>
+        <p>City-wise sales analysis & salesman performance</p>
+      </div>
+      <div class="feature-item">
+        <span class="material-symbols-outlined">storefront</span>
+        <p>Built for Pakistan's spice trade industry</p>
+      </div>
+    </div>
+
+    <div class="pk-badge">
+      <span class="pk-flag">🇵🇰</span>
+      <span>Made for Pakistan · Spice Bazaar</span>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+    <div class="auth-box">
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+          <div class="flash-msg flash-{{ category }}">
+            <span class="material-symbols-outlined" style="font-size:18px;">
+              {{ 'error' if category == 'error' else 'check_circle' }}
+            </span>
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endwith %}
+
+      <!-- Tabs -->
+      <div class="tab-header">
+        <button class="tab-btn active" onclick="showTab('login')">Login</button>
+        <button class="tab-btn" onclick="showTab('signup')">Sign Up</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <div id="tab-login" class="form-section active">
+        <div class="form-title">خوش آمدید 👋</div>
+        <div class="form-subtitle">Welcome back! Enter your details to continue.</div>
+
+        <form action="{{ url_for('login') }}" method="POST">
+          <div class="form-group">
+            <label>Email Address</label>
+            <div class="input-wrap">
+              <span class="material-symbols-outlined">mail</span>
+              <input type="email" name="email" placeholder="e.g. ahmad@example.com" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Password</label>
+            <div class="input-wrap">
+              <span class="material-symbols-outlined">lock</span>
+              <input type="password" name="password" id="login-pass" placeholder="Enter your password" required />
+              <span class="material-symbols-outlined" id="login-eye" onclick="var i=document.getElementById('login-pass');var e=document.getElementById('login-eye');if(i.type=='password'){i.type='text';e.textContent='visibility_off';}else{i.type='password';e.textContent='visibility';}" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;color:#c0916d;font-size:20px;z-index:99;">visibility</span>
+            </div>
+          </div>
+
+          <div class="forgot-link"><a href="#">Forgot password?</a></div>
+
+          <button type="submit" class="submit-btn">
+            <span class="material-symbols-outlined">login</span>
+            Login to SpiceFlow
+          </button>
+        </form>
+
+        <div class="divider">OR</div>
+        <div style="text-align:center; font-size:13px; color:#9b6a50;">
+          Don't have an account?
+          <a href="#" onclick="showTab('signup')" style="color:#93000b; font-weight:700; text-decoration:none;">Sign Up</a>
+        </div>
+      </div>
+
+      <!-- SIGNUP FORM -->
+      <div id="tab-signup" class="form-section">
+        <div class="form-title">Join SpiceFlow</div>
+        <div class="form-subtitle">Create your own account — your data stays private.</div>
+        <form action="{{ url_for('signup') }}" method="POST" onsubmit="return validateSignup()">
+          <div class="form-group">
+            <label>Full Name</label>
+            <div class="input-wrap">
+              <span class="material-symbols-outlined">badge</span>
+              <input type="text" id="reg-name" name="full_name" placeholder="e.g. Ahmad Raza" required />
+            </div>
+            <div id="err-name" style="color:#ba1a1a;font-size:11px;margin-top:4px;display:none;"></div>
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <div class="input-wrap">
+              <span class="material-symbols-outlined">mail</span>
+              <input type="email" id="reg-email" name="email" placeholder="e.g. ahmad@example.com" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Phone Number</label>
+            <div class="input-wrap">
+              <span class="material-symbols-outlined">phone</span>
+              <input type="tel" id="reg-phone" name="phone" placeholder="03001234567 or +923001234567" />
+            </div>
+            <div id="err-phone" style="color:#ba1a1a;font-size:11px;margin-top:4px;display:none;"></div>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <div class="input-wrap">
+              <span class="material-symbols-outlined">lock</span>
+              <input type="password" name="password" id="signup-pass" placeholder="Min. 6 characters" required minlength="6" />
+              <span class="material-symbols-outlined" id="signup-eye" onclick="var i=document.getElementById('signup-pass');var e=document.getElementById('signup-eye');if(i.type=='password'){i.type='text';e.textContent='visibility_off';}else{i.type='password';e.textContent='visibility';}" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;color:#c0916d;font-size:20px;z-index:99;">visibility</span>
+            </div>
+            <div id="err-pass" style="color:#ba1a1a;font-size:11px;margin-top:4px;display:none;"></div>
+          </div>
+          <input type="hidden" name="role" value="Admin" />
+          <button type="submit" class="submit-btn">
+            <span class="material-symbols-outlined">person_add</span>
+            Create Account
+          </button>
+        </form>
+        <div class="divider">OR</div>
+        <div style="text-align:center; font-size:13px; color:#9b6a50;">
+          Already have an account?
+          <a href="#" onclick="showTab('login')" style="color:#93000b; font-weight:700; text-decoration:none;">Login</a>
+        </div>
+      </div>
+
+      <div class="footer-note">
+        🇵🇰 Spice Bazaar v2.0 ·  Pakistan
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function validateSignup() {
+      var name  = document.getElementById('reg-name').value.trim();
+      var phone = document.getElementById('reg-phone').value.trim();
+      var pass  = document.getElementById('signup-pass').value;
+      var ok    = true;
+
+      // Name: no numbers allowed
+      if (/[0-9]/.test(name)) {
+        var e = document.getElementById('err-name');
+        e.textContent = '⚠ Name cannot contain numbers';
+        e.style.display = 'block';
+        ok = false;
+      } else {
+        document.getElementById('err-name').style.display = 'none';
+      }
+
+      // Phone: allow empty, or must be 03XXXXXXXXX or +92XXXXXXXXXX
+      if (phone !== '') {
+        var clean = phone.replace(/\s/g, '');
+        var valid = /^0[0-9]{10}$/.test(clean) || /^\+92[0-9]{10}$/.test(clean);
+        if (!valid) {
+          var ep = document.getElementById('err-phone');
+          ep.textContent = '⚠ Phone must be 03XXXXXXXXX or +92XXXXXXXXXX';
+          ep.style.display = 'block';
+          ok = false;
+        } else {
+          document.getElementById('err-phone').style.display = 'none';
+        }
+      }
+
+      // Password: min 6 characters
+      if (pass.length < 6) {
+        var ep2 = document.getElementById('err-pass');
+        ep2.textContent = '⚠ Password must be at least 6 characters';
+        ep2.style.display = 'block';
+        ok = false;
+      } else {
+        document.getElementById('err-pass').style.display = 'none';
+      }
+
+      return ok;
+    }
+
+    function showTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach((b, i) => {
+        b.classList.toggle('active', (i === 0) === (tab === 'login'));
+      });
+      document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+      document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+    }
+
+    function togglePass(id, btn) {
+      var input = document.getElementById(id);
+      var icon = btn.querySelector('span');
+      if (!input || !icon) return;
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = 'visibility_off';
+      } else {
+        input.type = 'password';
+        icon.textContent = 'visibility';
+      }
+    }
+  </script>
+</body>
+</html>

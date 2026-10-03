@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spice Bazaar - New Order</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Poppins', sans-serif; background-color: #f8f9ff; color: #121c28; }
+
+    /* ── Sidebar ── */
+    .sidebar { width: 260px; height: 100vh; position: fixed; left: 0; top: 0; background-color: #75330d; display: flex; flex-direction: column; z-index: 50; }
+    .sidebar-logo { padding: 32px 24px 20px; }
+    .sidebar-logo h1 { font-size: 28px; font-weight: 700; color: #ffffff; }
+    .sidebar-logo p { font-size: 13px; color: rgba(217,227,244,0.7); margin-top: 4px; }
+    .sidebar nav { flex: 1; padding: 0 16px; overflow-y: auto; }
+    .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; color: rgba(217,227,244,0.7); text-decoration: none; font-size: 18px; margin-bottom: 4px; transition: background 0.2s; }
+    .nav-link:hover { background-color: rgba(147,74,35,0.3); color: #f8f9ff; }
+    .nav-link.active { background-color: rgba(147,74,35,0.5); color: #ffffff; font-weight: 700; border-left: 4px solid #fe932c; border-radius: 0 8px 8px 0; }
+    .sidebar-bottom { padding: 16px; border-top: 1px solid rgba(147,74,35,0.3); flex-shrink: 0; }
+    .sidebar-bottom-link { display: flex; align-items: center; gap: 12px; padding: 8px 16px; color: rgba(217,227,244,0.7); background: none; border: none; font-family: 'Poppins', sans-serif; font-size: 15px; cursor: pointer; width: 100%; text-align: left; }
+    .sidebar-bottom-link:hover { color: #f8f9ff; }
+    .logout-link { color: #fe932c !important; }
+
+    /* ── Top Bar ── */
+    .topbar { position: fixed; top: 0; left: 260px; right: 0; height: 64px; background-color: #f8f9ff; border-bottom: 1px solid #e4beb9; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; z-index: 40; }
+    .search-box { position: relative; max-width: 400px; width: 100%; }
+    .search-box input { width: 100%; padding: 8px 16px 8px 40px; background-color: #eef4ff; border: none; border-radius: 8px; font-size: 15px; outline: none; font-family: 'Poppins', sans-serif; }
+    .search-box .material-symbols-outlined { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #5b403d; font-size: 20px; }
+    .topbar-right { display: flex; align-items: center; gap: 8px; }
+    .icon-btn { background: none; border: none; padding: 8px; border-radius: 50%; cursor: pointer; color: #5b403d; }
+    .icon-btn:hover { background-color: #eef4ff; }
+    .user-info { display: flex; align-items: center; gap: 12px; padding-left: 16px; border-left: 1px solid #e4beb9; margin-left: 8px; }
+    .user-info .name { font-size: 13px; font-weight: 700; color: #93000b; text-transform: uppercase; letter-spacing: 0.05em; }
+    .user-info .role { font-size: 12px; color: #5b403d; }
+
+    /* ── Main Content ── */
+    .main { margin-left: 260px; padding-top: 64px; padding-bottom: 120px; min-height: 100vh; padding-left: 24px; padding-right: 24px; }
+
+    /* ── Page Header ── */
+    .page-header { display: flex; justify-content: space-between; align-items: flex-end; padding: 32px 0 24px; }
+    .page-header h2 { font-size: 24px; font-weight: 600; color: #93000b; margin-bottom: 4px; }
+    .page-header p { font-size: 15px; color: #5b403d; }
+    .status-badge { background-color: rgba(147,0,11,0.05); border: 1px solid rgba(147,0,11,0.1); padding: 8px 16px; border-radius: 8px; }
+    .status-badge .label { font-size: 11px; font-weight: 700; color: #93000b; text-transform: uppercase; letter-spacing: 0.05em; }
+    .status-badge .value { font-size: 14px; font-weight: 700; color: #904d00; }
+
+    /* ── Card ── */
+    .card { background-color: #ffffff; border-radius: 12px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; }
+    .section-title { font-size: 18px; font-weight: 600; color: #75330d; display: flex; align-items: center; gap: 8px; margin-bottom: 24px; }
+
+    /* ── Form ── */
+    .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-group label { font-size: 11px; font-weight: 700; color: #5b403d; text-transform: uppercase; letter-spacing: 0.05em; }
+    .form-group input, .form-group select { width: 100%; padding: 12px 16px; border: 1px solid #e4beb9; border-radius: 8px; font-size: 15px; font-family: 'Poppins', sans-serif; outline: none; background-color: #ffffff; transition: border-color 0.2s; }
+    .form-group input:focus, .form-group select:focus { border-color: #fe932c; }
+
+    /* ── Spice Grid ── */
+    .spice-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    .spice-card { background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 2px solid transparent; transition: border-color 0.2s; }
+    .spice-card:hover { border-color: #fe932c; }
+    .spice-img { height: 128px; overflow: hidden; position: relative; }
+    .spice-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+    .spice-card:hover .spice-img img { transform: scale(1.05); }
+    .spice-img .no-img { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background-color: #fff8f0; }
+    .spice-img .no-img .material-symbols-outlined { font-size: 40px; color: #e4beb9; }
+    .stock-tag { position: absolute; top: 8px; right: 8px; background-color: rgba(255,255,255,0.92); padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; color: #93000b; text-transform: uppercase; letter-spacing: 0.05em; }
+    .spice-body { padding: 16px; }
+    .spice-body h4 { font-size: 15px; font-weight: 600; margin-bottom: 16px; color: #121c28; }
+    .qty-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .qty-row span { font-size: 12px; font-weight: 600; color: #5b403d; }
+    .qty-control { display: flex; align-items: center; border: 1.5px solid #e4beb9; border-radius: 8px; overflow: hidden; height: 36px; }
+    .qty-control button { min-width: 34px; height: 36px; background-color: #eef4ff; border: none; cursor: pointer; font-family: 'Poppins', sans-serif; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: #75330d; transition: background .15s; flex-shrink: 0; }
+    .qty-control button:hover { background-color: #fe932c; color: #fff; }
+    .qty-control button .material-symbols-outlined { font-size: 18px; }
+    .qty-control input { width: 44px; text-align: center; border: none; border-left: 1px solid #e4beb9; border-right: 1px solid #e4beb9; padding: 0; height: 36px; font-size: 15px; font-weight: 600; font-family: 'Poppins', sans-serif; outline: none; color: #121c28; }
+
+    /* ── Footer Bar ── */
+    .footer-bar { position: fixed; bottom: 0; left: 260px; right: 0; background-color: #f8f9ff; border-top: 1px solid #e4beb9; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); z-index: 40; }
+    .footer-summary { display: flex; align-items: center; gap: 32px; }
+    .footer-stat label { font-size: 11px; font-weight: 700; color: #5b403d; text-transform: uppercase; letter-spacing: 0.05em; display: block; }
+    .footer-stat .stat-value { font-size: 18px; font-weight: 700; color: #75330d; }
+    .footer-stat .stat-total { font-size: 28px; font-weight: 700; color: #93000b; }
+    .footer-divider { width: 1px; height: 40px; background-color: #e4beb9; }
+    .footer-actions { display: flex; gap: 16px; }
+    .btn-outline { padding: 12px 28px; border: 2px solid #fe932c; background: none; color: #904d00; font-weight: 700; border-radius: 8px; cursor: pointer; font-family: 'Poppins', sans-serif; font-size: 15px; }
+    .btn-outline:hover { background-color: rgba(254,147,44,0.05); }
+    .btn-primary { padding: 12px 36px; background-color: #93000b; color: #ffffff; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; font-family: 'Poppins', sans-serif; font-size: 15px; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(147,0,11,0.2); }
+    .btn-primary:hover { background-color: #b91c1c; }
+
+    /* ── Toast ── */
+    .toast { position: fixed; top: 80px; right: 24px; background: #1a6e35; color: #fff; padding: 14px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; display: none; align-items: center; gap: 8px; z-index: 999; box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+    .toast.show { display: flex; }
+  </style>
+</head>
+<body>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <span class="material-symbols-outlined">check_circle</span>
+    <span id="toast-msg">Order placed successfully!</span>
+  </div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <h1>Spice Bazaar</h1>
+      <p>Zaiqay Ka Asal Bazaar</p>
+    </div>
+    <nav>
+      <a href="{{ url_for('dashboard') }}" class="nav-link">
+        🏠 Dashboard
+      </a>
+      <a href="{{ url_for('new_order') }}" class="nav-link active">
+        🛒 New Order
+      </a>
+      <a href="{{ url_for('orders') }}" class="nav-link">
+        🚚 Orders
+      </a>
+      <a href="{{ url_for('inventory') }}" class="nav-link">
+        📦 Inventory
+      </a>
+      <a href="{{ url_for('analysis') }}" class="nav-link">
+        📊 Analysis
+      </a>
+    </nav>
+        <div class="sidebar-bottom">
+        <a href="/logout" class="sidebar-bottom-link" style="color:#fe932c;font-weight:700;">
+            <span class="material-symbols-outlined">logout</span> Logout
+        </a>
+    </div>
+  </aside>
+
+  <!-- Top Bar -->
+  <header class="topbar">
+    <div class="search-box">
+      <span class="material-symbols-outlined">search</span>
+      <input type="text" id="spice-search" placeholder="Search inventory or orders..." oninput="filterSpices()" />
+    </div>
+    <div class="topbar-right">
+      <button class="icon-btn"><span class="material-symbols-outlined">notifications</span></button>
+      <div class="user-info">
+        <div>
+          <div class="name">{{ session.get('full_name', 'Admin') }}</div>
+          <div class="role">{{ session.get('role', 'Admin') }}</div>
+        </div>
+        <div style="width:38px;height:38px;border-radius:50%;background-color:#ffdbcc;border:2px solid #fe932c;display:flex;align-items:center;justify-content:center;font-weight:700;color:#75330d;font-size:15px;">{{ session.get('full_name', 'A')[:1].upper() }}</div>
+      </div>
+      <a href="{{ url_for('logout') }}" style="display:flex;align-items:center;gap:6px;padding:7px 14px;background:#fff0ee;border:1.5px solid #ffcdd2;border-radius:8px;color:#93000b;font-size:13px;font-weight:700;text-decoration:none;margin-left:8px;">
+        <span class="material-symbols-outlined" style="font-size:18px;">logout</span> Logout
+      </a>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="main">
+
+    <div class="page-header">
+      <div>
+        <h2> Create New Order</h2>
+        <p>Fill in customer details and select spice quantities to generate a fresh order.</p>
+      </div>
+      <div class="status-badge">
+        <div class="label">Order Status</div>
+        <div class="value" id="order-num">DRAFT / PENDING</div>
+      </div>
+    </div>
+
+    <!-- THE FORM — wraps everything that gets submitted -->
+    <form id="order-form" action="{{ url_for('submit_order') }}" method="POST">
+
+      <!-- Customer Info -->
+      <div class="card">
+        <div class="section-title">
+          <span class="material-symbols-outlined">person</span>
+          Customer Information
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Customer Name</label>
+            <input type="text" name="customer_name" placeholder="e.g. Usman Malik" required />
+          </div>
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" name="phone" placeholder="+92 300 1234567" required />
+          </div>
+          <div class="form-group">
+            <label>City</label>
+            <select name="city" required>
+              <option value="">Select City</option>
+              <option>Karachi</option>
+              <option>Lahore</option>
+              <option>Islamabad</option>
+              <option>Rawalpindi</option>
+              <option>Faisalabad</option>
+              <option>Multan</option>
+              <option>Peshawar</option>
+              <option>Quetta</option>
+              <option>Sialkot</option>
+              <option>Gujranwala</option>
+              <option>Hyderabad</option>
+              
+            
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Salesman</label>
+            <select name="salesman">
+              <option value="">Select Salesman</option>
+              <option>Ahmed Raza</option>
+              <option>Bilal Khan</option>
+              <option>Usman Tariq</option>
+              <option>Zubair Ahmad</option>
+              <option>Hamza Sheikh</option>
+              <option>Imran Butt</option>
+              <option>Farhan Ali</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spice Cards -->
+      <div class="section-title" style="margin-bottom: 16px;">
+        <span class="material-symbols-outlined">restaurant_menu</span>
+        Select Spices &amp; Quantities
+      </div>
+
+      <div class="spice-grid">
+        {% for s in spices %}
+        <div class="spice-card" data-name="{{ s.name|lower }}" data-cat="{{ (s.category or '')|lower }}">
+          <div class="spice-img">
+            <img src="{{ s.img_url or '' }}" alt="{{ s.name }}"
+                 style="{% if not s.img_url or not s.img_url|trim %}display:none;{% endif %}"
+                 onerror="this.style.display='none';this.parentElement.querySelector('.no-img').style.display='flex';" />
+            <div class="no-img" style="{% if s.img_url and s.img_url|trim %}display:none;{% endif %}">
+              {% if 'mirch' in s.name.lower() or 'chili' in s.name.lower() %}🌶️
+              {% elif 'haldi' in s.name.lower() or 'turmeric' in s.name.lower() %}🌕
+              {% elif 'zeera' in s.name.lower() or 'cumin' in s.name.lower() %}🌾
+              {% elif 'dhaniya' in s.name.lower() %}🌿
+              {% elif 'elaichi' in s.name.lower() or 'cardamom' in s.name.lower() %}🫚
+              {% elif 'kali' in s.name.lower() or 'pepper' in s.name.lower() %}🖤
+              {% elif 'garam' in s.name.lower() %}🍛
+              {% else %}🌶️{% endif %}
+            </div>
+            {% if s.stock_20 > 0 or s.stock_50 > 0 %}
+            <div class="stock-tag">In Stock</div>
+            {% else %}
+            <div class="stock-tag" style="background:#ba1a1a; color:#fff;">Out of Stock</div>
+            {% endif %}
+          </div>
+          <div class="spice-body">
+            <h4>{{ s.name }}</h4>
+            <div class="qty-row">
+              <span>Rs.20 Pkt ({{ s.stock_20 }} left)</span>
+              <div class="qty-control">
+                <button type="button" onclick="changeQty('qty20_{{ s.id }}', -1)"><span class="material-symbols-outlined" style="font-size:16px;">remove</span></button>
+                <input type="number" id="qty20_{{ s.id }}" name="qty_20_{{ s.id }}" value="0" min="0" max="{{ s.stock_20 }}" onchange="updateTotal()" />
+                <button type="button" onclick="changeQty('qty20_{{ s.id }}', 1)"><span class="material-symbols-outlined" style="font-size:16px;">add</span></button>
+              </div>
+            </div>
+            <div class="qty-row">
+              <span>Rs.50 Pkt ({{ s.stock_50 }} left)</span>
+              <div class="qty-control">
+                <button type="button" onclick="changeQty('qty50_{{ s.id }}', -1)"><span class="material-symbols-outlined" style="font-size:16px;">remove</span></button>
+                <input type="number" id="qty50_{{ s.id }}" name="qty_50_{{ s.id }}" value="0" min="0" max="{{ s.stock_50 }}" onchange="updateTotal()" />
+                <button type="button" onclick="changeQty('qty50_{{ s.id }}', 1)"><span class="material-symbols-outlined" style="font-size:16px;">add</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+    </form>
+    <!-- END FORM -->
+
+  </main>
+
+  <!-- Footer Bar -->
+  <footer class="footer-bar">
+    <div class="footer-summary">
+      <div class="footer-stat">
+        <label>Selected Items</label>
+        <div class="stat-value footer-items">0 packets</div>
+      </div>
+      <div class="footer-divider"></div>
+      <div class="footer-stat">
+        <label>Total Amount</label>
+        <div class="stat-total footer-total">Rs. 0.00</div>
+      </div>
+    </div>
+    <div class="footer-actions">
+      <button class="btn-outline" type="button" onclick="clearAll()">Clear All</button>
+      <button type="submit" form="order-form" class="btn-primary" onclick="return validateOrder()">
+        <span class="material-symbols-outlined">check_circle</span>
+        Place Order
+      </button>
+    </div>
+  </footer>
+
+  <script>
+    function changeQty(id, delta) {
+      var input = document.getElementById(id);
+      var newVal = parseInt(input.value || 0) + delta;
+      var max = parseInt(input.max) || 9999;
+      if (newVal < 0) newVal = 0;
+      if (newVal > max) newVal = max;
+      input.value = newVal;
+      updateTotal();
+    }
+
+    function updateTotal() {
+      var inputs = document.querySelectorAll('input[type="number"]');
+      var total = 0, items = 0;
+      inputs.forEach(function(inp) {
+        if (!inp.name) return;
+        var qty = parseInt(inp.value || 0);
+        if (qty > 0) {
+          items += qty;
+          if (inp.name.startsWith('qty_20_')) total += qty * 20;
+          if (inp.name.startsWith('qty_50_')) total += qty * 50;
+        }
+      });
+      var totalEl = document.querySelector('.footer-total');
+      var itemEl  = document.querySelector('.footer-items');
+      if (totalEl) totalEl.textContent = 'Rs. ' + total.toFixed(2);
+      if (itemEl)  itemEl.textContent  = items + ' packets';
+    }
+
+    function clearAll() {
+      document.querySelectorAll('input[type="number"]').forEach(function(inp) {
+        inp.value = 0;
+      });
+      updateTotal();
+    }
+
+    function validateOrder() {
+      var nameInput = document.querySelector('[name="customer_name"]');
+      var phoneInput = document.querySelector('[name="phone"]');
+      var cityInput = document.querySelector('[name="city"]');
+      var name  = nameInput.value.trim();
+      var phone = phoneInput.value.trim().replace(/[\s\-]/g, '');
+      var city  = cityInput.value;
+
+      // Name: required, letters and spaces only
+      if (!name) {
+        showError(nameInput, 'Customer name is required.');
+        return false;
+      }
+      if (/[0-9]/.test(name)) {
+        showError(nameInput, 'Name cannot contain numbers.');
+        return false;
+      }
+      clearError(nameInput);
+
+      // Phone: exactly 11 digits (Pakistani format)
+      if (!phone) {
+        showError(phoneInput, 'Phone number is required.');
+        return false;
+      }
+      if (!/^0[0-9]{10}$/.test(phone)) {
+        showError(phoneInput, 'Phone must be 11 digits starting with 0 (e.g. 03001234567).');
+        return false;
+      }
+      clearError(phoneInput);
+
+      if (!city) {
+        showError(cityInput, 'Please select a city.');
+        return false;
+      }
+      clearError(cityInput);
+
+      var hasItems = false;
+      document.querySelectorAll('input[type="number"]').forEach(function(inp) {
+        if (parseInt(inp.value || 0) > 0) hasItems = true;
+      });
+      if (!hasItems) {
+        alert('Please select at least one spice packet to place an order.');
+        return false;
+      }
+      return true;
+    }
+
+    function showError(input, msg) {
+      clearError(input);
+      input.style.borderColor = '#ba1a1a';
+      var err = document.createElement('div');
+      err.className = 'field-error';
+      err.style.cssText = 'color:#ba1a1a;font-size:11px;margin-top:4px;font-weight:600;';
+      err.textContent = '⚠ ' + msg;
+      input.parentNode.insertBefore(err, input.nextSibling);
+    }
+
+    function clearError(input) {
+      input.style.borderColor = '';
+      var next = input.nextSibling;
+      if (next && next.className === 'field-error') next.remove();
+    }
+
+    // Real-time validation
+    document.querySelector('[name="customer_name"]').addEventListener('input', function() {
+      if (/[0-9]/.test(this.value)) showError(this, 'Name cannot contain numbers.');
+      else clearError(this);
+    });
+    document.querySelector('[name="phone"]').addEventListener('input', function() {
+      var v = this.value.replace(/[\s\-]/g, '');
+      if (v && !/^0[0-9]{0,10}$/.test(v)) showError(this, 'Must start with 0 and be 11 digits.');
+      else clearError(this);
+    });
+
+    function filterSpices() {
+      const q = (document.getElementById('spice-search').value || '').toLowerCase().trim();
+      document.querySelectorAll('.spice-card').forEach(card => {
+        const match = !q || card.dataset.name.includes(q) || card.dataset.cat.includes(q);
+        card.style.display = match ? '' : 'none';
+      });
+    }
+  </script>
+
+</body>
+</html>

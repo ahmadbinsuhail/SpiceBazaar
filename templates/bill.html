@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Invoice {{ order.order_number }} — SpiceBazaar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Poppins', sans-serif; background: #f5f0eb; display: flex; justify-content: center; padding: 32px 16px 60px; min-height: 100vh; }
+
+    .invoice-wrap { width: 100%; max-width: 720px; }
+
+    /* Print / Download bar */
+    .action-bar { display: flex; gap: 12px; justify-content: flex-end; margin-bottom: 20px; }
+    .action-bar button {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 22px; border-radius: 8px; font-family: 'Poppins', sans-serif;
+      font-size: 14px; font-weight: 700; cursor: pointer; border: none;
+    }
+    .btn-print  { background: #75330d; color: #fff; }
+    .btn-back   { background: #fff; color: #75330d; border: 2px solid #75330d; }
+    .btn-print:hover { background: #93000b; }
+
+    /* Invoice card */
+    .invoice {
+      background: #ffffff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+    }
+
+    /* Header */
+    .inv-header {
+      background: linear-gradient(135deg, #75330d 0%, #93000b 100%);
+      padding: 36px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      color: #fff;
+    }
+    .logo-area h1 { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; }
+    .logo-area p  { font-size: 13px; opacity: 0.75; margin-top: 4px; }
+    .logo-area .tagline { font-size: 11px; opacity: 0.6; margin-top: 2px; font-style: italic; }
+    .inv-meta { text-align: right; }
+    .inv-meta .inv-title { font-size: 28px; font-weight: 800; letter-spacing: 2px; opacity: 0.9; }
+    .inv-meta .inv-num   { font-size: 15px; font-weight: 700; margin-top: 6px; }
+    .inv-meta .inv-date  { font-size: 12px; opacity: 0.7; margin-top: 4px; }
+
+    /* Status ribbon */
+    .status-ribbon {
+      padding: 10px 40px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .status-ribbon.pending    { background: #fef3c7; color: #92400e; }
+    .status-ribbon.packing    { background: #dbeafe; color: #1e40af; }
+    .status-ribbon.dispatched { background: #ffdad6; color: #93000b; }
+    .status-ribbon.delivered  { background: #dcfce7; color: #15803d; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+
+    /* Body */
+    .inv-body { padding: 36px 40px; }
+
+    /* Parties */
+    .parties { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 32px; }
+    .party-box h3 { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #999; margin-bottom: 12px; }
+    .party-box .pname { font-size: 18px; font-weight: 700; color: #121c28; margin-bottom: 4px; }
+    .party-box .pdetail { font-size: 13px; color: #5b403d; margin-bottom: 2px; }
+
+    /* Divider */
+    .divider { height: 1px; background: #f0e8e0; margin: 0 0 28px; }
+
+    /* Items table */
+    .items-table { width: 100%; border-collapse: collapse; margin-bottom: 28px; }
+    .items-table thead th {
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+      color: #999; padding: 8px 12px; text-align: left; border-bottom: 2px solid #f0e8e0;
+    }
+    .items-table thead th:last-child { text-align: right; }
+    .items-table tbody tr:nth-child(even) { background: #fdf8f5; }
+    .items-table tbody td { padding: 14px 12px; font-size: 14px; color: #121c28; vertical-align: top; }
+    .items-table tbody td:last-child { text-align: right; font-weight: 700; color: #75330d; }
+    .spice-name { font-weight: 600; }
+    .spice-cat  { font-size: 11px; color: #999; margin-top: 2px; }
+    .pkt-detail { font-size: 12px; color: #5b403d; margin-top: 3px; }
+
+    /* Totals */
+    .totals-wrap { display: flex; justify-content: flex-end; }
+    .totals-box { width: 280px; }
+    .totals-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; color: #5b403d; border-bottom: 1px solid #f0e8e0; }
+    .totals-row.grand { border-top: 2px solid #75330d; border-bottom: none; padding-top: 14px; margin-top: 4px; }
+    .totals-row.grand .label { font-size: 16px; font-weight: 700; color: #121c28; }
+    .totals-row.grand .value { font-size: 22px; font-weight: 800; color: #93000b; }
+
+    /* Footer */
+    .inv-footer {
+      background: #fdf8f5;
+      border-top: 1px solid #f0e8e0;
+      padding: 24px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .inv-footer .note { font-size: 12px; color: #999; }
+    .inv-footer .brand { font-size: 13px; font-weight: 700; color: #75330d; }
+
+    /* Watermark for delivered */
+    .watermark {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%) rotate(-30deg);
+      font-size: 100px; font-weight: 800; color: rgba(21,128,61,0.05);
+      pointer-events: none; z-index: 0; white-space: nowrap;
+    }
+
+    @media print {
+      body { background: #fff; padding: 0; }
+      .action-bar { display: none; }
+      .invoice { box-shadow: none; border-radius: 0; }
+      .watermark { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  {% if order.status == 'Delivered' %}
+  <div class="watermark">DELIVERED</div>
+  {% endif %}
+
+  <div class="invoice-wrap">
+
+    <!-- Action Bar -->
+    <div class="action-bar">
+      <button class="btn-back" onclick="window.close()">← Back</button>
+      <button class="btn-print" onclick="window.print()">🖨 Print / Save PDF</button>
+    </div>
+
+    <div class="invoice">
+
+      <!-- Header -->
+      <div class="inv-header">
+        <div class="logo-area">
+          <h1>🌶 Spice Bazaar</h1>
+          <p>Pakistan's Finest Spice </p>
+          <p class="tagline">Zaiqay Ka Asal Bazaar</p>
+        </div>
+        <div class="inv-meta">
+          <div class="inv-title">INVOICE</div>
+          <div class="inv-num">{{ order.order_number }}</div>
+          <div class="inv-date">Date: {{ order.display_time[:16] if order.display_time else "" }}</div>
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div class="status-ribbon {{ order.status.lower() }}">
+        <div class="status-dot"></div>
+        Status: {{ order.status }}
+      </div>
+
+      <!-- Body -->
+      <div class="inv-body">
+
+        <!-- Parties -->
+        <div class="parties">
+          <div class="party-box">
+            <h3>From (Seller)</h3>
+            <div class="pname">Spice Bazaar</div> 
+            <div class="pdetail">{{ user.full_name or user.email }}</div>
+            <div class="pdetail">{{ user.email }}</div>
+            {% if user.phone %}<div class="pdetail">{{ user.phone }}</div>{% endif %}
+            <div class="pdetail">Pakistan 🇵🇰</div>
+          </div>
+          <div class="party-box" style="text-align:right;">
+            <h3>Bill To (Customer)</h3>
+            <div class="pname">{{ order.customer_name }}</div>
+            <div class="pdetail">📞 {{ order.phone }}</div>
+            <div class="pdetail">📍 {{ order.city }}</div>
+            {% if order.salesman %}<div class="pdetail">🧑‍💼 Via: {{ order.salesman }}</div>{% endif %}
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Items -->
+        <table class="items-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Spice Item</th>
+              <th>Rs.20 Pkts</th>
+              <th>Rs.50 Pkts</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in items %}
+            {% if item.qty_20 > 0 or item.qty_50 > 0 %}
+            <tr>
+              <td style="color:#999; font-size:12px;">{{ loop.index }}</td>
+              <td>
+                <div class="spice-name">{{ item.name }}</div>
+                {% if item.category %}<div class="spice-cat">{{ item.category }}</div>{% endif %}
+                <div class="pkt-detail">
+                  {% if item.qty_20 > 0 %}{{ item.qty_20 }} × Rs.20{% endif %}
+                  {% if item.qty_20 > 0 and item.qty_50 > 0 %} + {% endif %}
+                  {% if item.qty_50 > 0 %}{{ item.qty_50 }} × Rs.50{% endif %}
+                </div>
+              </td>
+              <td style="text-align:center;">{% if item.qty_20 > 0 %}{{ item.qty_20 }}{% else %}—{% endif %}</td>
+              <td style="text-align:center;">{% if item.qty_50 > 0 %}{{ item.qty_50 }}{% else %}—{% endif %}</td>
+              <td>Rs. {{ "%.0f"|format(item.subtotal) }}</td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <!-- Totals -->
+        <div class="totals-wrap">
+          <div class="totals-box">
+            <div class="totals-row">
+              <span class="label">Subtotal</span>
+              <span class="value">Rs. {{ "%.0f"|format(order.total_amount) }}</span>
+            </div>
+            <div class="totals-row">
+              <span class="label">Delivery</span>
+              <span class="value">Free</span>
+            </div>
+            <div class="totals-row">
+              <span class="label">Tax / GST</span>
+              <span class="value">Incl.</span>
+            </div>
+            <div class="totals-row grand">
+              <span class="label">Total</span>
+              <span class="value">Rs. {{ "%.0f"|format(order.total_amount) }}</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end inv-body -->
+
+      <!-- Footer -->
+      <div class="inv-footer">
+        <div class="note">Thank you for your business! 🌶<br>Generated by SpiceFlow · Pakistan</div>
+        <div class="brand">SpiceFlow 🇵🇰</div>
+      </div>
+
+    </div><!-- end invoice -->
+  </div>
+
+</body>
+</html>
